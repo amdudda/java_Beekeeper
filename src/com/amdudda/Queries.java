@@ -7,6 +7,17 @@ public class Queries {
 
     // no constructor, this just stores a bunch of SQL strings
 
+    protected String getAllHiveData() {
+        return "SELECT " + Database.HONEY_TABLE_NAME + "." + Database.PK_COLUMN + ", " +
+                Database.DATE_COLLECTED_COLUMN + ", " +
+                Database.WEIGHT_COLUMN + ", " +
+                Database.LOCATION_COLUMN + " " +
+                "FROM " + Database.HONEY_TABLE_NAME + ", " + Database.BEEHIVE_TABLE_NAME + " " +
+                "WHERE " + Database.HONEY_TABLE_NAME + "." + Database.BEEHIVE_FK_COLUMN + " = " +
+                Database.BEEHIVE_TABLE_NAME + "." + Database.PK_COLUMN +
+                "ORDER BY " + Database.DATE_COLLECTED_COLUMN + " DESC";
+    }
+
     protected String getTotalWeightOfAllHoney() {
         // gets the total amount of honey
         return "SELECT SUM(weight) AS TotalWeight FROM " + Database.HONEY_TABLE_NAME;
