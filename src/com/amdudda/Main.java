@@ -13,14 +13,7 @@ public class Main {
         // display the main GUI form
         HarvestManager hm = new HarvestManager();
 
-        // let's make really truly sure our connections are closed
-        try {
-            if (Database.statement != null) Database.statement.close();
-            if (Database.conn != null) Database.conn.close();
-            if (Database.rs != null) Database.rs.close();
-        } catch (SQLException sqle) {
-            System.out.println(sqle);
-        }
+
     }
 
 

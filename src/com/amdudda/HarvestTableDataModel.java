@@ -21,7 +21,7 @@ public class HarvestTableDataModel extends AbstractTableModel {
     private void establishMetadata() {
         // figure out how many columns of data there are
         try {
-            colcount = rs.getMetaData().getColumnCount();
+            colcount = this.rs.getMetaData().getColumnCount();
 
         } catch (SQLException se) {
             System.out.println("Error counting columns" + se);
@@ -41,11 +41,11 @@ public class HarvestTableDataModel extends AbstractTableModel {
         // I did this independently, though the MovieData code looks almost identical.
         int i = 0;
         try {
-            rs.beforeFirst();  // move to the beginning of the data set
-            while (rs.next()) {
+            this.rs.beforeFirst();  // move to the beginning of the data set
+            while (this.rs.next()) {
                 i++;
             }
-            rs.beforeFirst(); // point back to the start of the data set
+            this.rs.beforeFirst(); // point back to the start of the data set
         } catch (SQLException sqle) {
             System.out.println("Unable to count rows in database.");
         }

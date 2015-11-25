@@ -2,8 +2,10 @@ package com.amdudda;
 
 import javax.swing.*;
 import javax.xml.crypto.Data;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -17,7 +19,9 @@ public class HarvestManager extends JFrame {
 
     public HarvestManager() {
         setContentPane(rootPanel);
-        pack();
+        //pack();
+        Dimension dim = new Dimension(500,500);
+        setSize(dim);
         setTitle("Beehive Harvest Database Application");
         setVisible(true);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -25,7 +29,7 @@ public class HarvestManager extends JFrame {
         // need to set up our data table
         try {
             String sqlToRun = Queries.getAllHiveData();
-            System.out.println(sqlToRun);
+            // System.out.println(sqlToRun);
             Database.openConnStatement();
             Database.rs = Database.statement.executeQuery(sqlToRun);
             htdm = new HarvestTableDataModel(Database.rs);
@@ -39,6 +43,15 @@ public class HarvestManager extends JFrame {
         quitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // let's make really truly sure our connections are closed
+                try {
+                    if (Database.statement != null) Database.statement.close();
+                    if (Database.conn != null) Database.conn.close();
+                    if (Database.rs != null) Database.rs.close();
+                } catch (SQLException sqle) {
+                    System.out.println(sqle);
+                }
+
                 System.exit(0);
             }
         });
