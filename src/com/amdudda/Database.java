@@ -29,7 +29,13 @@ public class Database {
     private static Statement statement = Main.statement;
     private static ResultSet rs = Main.rs;
 
-    // no constructor.
+    // also some static values to refer to hive IDs since we're only working with 4 hives:
+    protected final static int NORTHFIELD = 1;
+    protected final static int SOUTHMEADOW = 2;
+    protected final static int EASTLEA = 3;
+    protected final static int BOGGYMARSH = 4;
+
+    // no constructor; this is really just a code repository for database creation.
 
     // A method to set up the database for the rest of the project
     public static void createDatabase() {
@@ -65,13 +71,6 @@ public class Database {
     private static void createTables() {
 
         // set up connection
-        /*try {
-            conn = DriverManager.getConnection(DB_CONNECTION_URL + DB_NAME, USER, PASS);
-            statement = conn.createStatement();
-        } catch (SQLException sqle) {
-            System.out.println("Unable to open connection or create statement.");
-            System.out.println(sqle);
-        }*/
         openConnStatement();
 
         // create beehive table
@@ -161,15 +160,20 @@ public class Database {
     private static void createHoneyData() {
         // generates some honey data to populate the database
         // nb: data columns after key are date, weight, and beehive number.
-        addHoneyData("2014-04-01",25.74,1);
-        addHoneyData("2014-05-01",37.6,1);
-        addHoneyData("2014-04-01",25.74,3);
-        addHoneyData("2014-05-01",32.19,3);
-        addHoneyData("2015-04-01",13.75,1);
-        addHoneyData("2015-05-01",99.52,2);
-        addHoneyData("2015-04-01",77.74,2);
-        addHoneyData("2015-05-01",32.19,3);
-
+        addHoneyData("2014-08-01",25.74,NORTHFIELD);
+        addHoneyData("2014-10-01",37.6,NORTHFIELD);
+        addHoneyData("2014-08-01",25.74,EASTLEA);
+        addHoneyData("2014-10-01",32.19,EASTLEA);
+        addHoneyData("2015-08-01",13.75,NORTHFIELD);
+        addHoneyData("2015-10-01",99.52,SOUTHMEADOW);
+        addHoneyData("2015-08-01",77.74,SOUTHMEADOW);
+        addHoneyData("2015-10-01",16.19,EASTLEA);
+        addHoneyData("2013-08-01",22.1,NORTHFIELD);
+        addHoneyData("2013-10-01",18.95,NORTHFIELD);
+        addHoneyData("2013-08-01",45.62,EASTLEA);
+        addHoneyData("2013-10-01",17.11,EASTLEA);
+        addHoneyData("2012-08-01",65.02,NORTHFIELD);
+        addHoneyData("2012-10-01",78.13,SOUTHMEADOW);
     }
 
     protected static void addHoneyData(String date, double weight, int HiveID) {
@@ -179,7 +183,7 @@ public class Database {
         // this makes sure we don't reuse numbers from previous tests -- adapted the sql statement from the one at
         //  http://stackoverflow.com/questions/1405393/finding-the-next-available-id-in-mysql
         try {
-            sqlToRun = "SELECT Auto_increment AS NextID FROM information_schema.tables WHERE table_name='HoneyData'";
+            sqlToRun = "SELECT Auto_increment AS NextID FROM information_schema.tables WHERE table_name='" + HONEY_TABLE_NAME + "'";
             rs = statement.executeQuery(sqlToRun);
             rs.next();  // move to the first (hopefully only) record
             next_avail_id = rs.getInt("NextID");
