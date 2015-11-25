@@ -91,4 +91,17 @@ public class HarvestTableDataModel extends AbstractTableModel {
             return false;
         }
     }
+
+    @Override
+    public String getColumnName(int col){
+        //Get from ResultSet metadata, which contains the database column names
+        // This is the code from MovieDataModel that actuall puts column names in the top of the table.
+        try {
+            //System.out.println("colname = " + this.rs.getMetaData().getColumnName(col + 1));
+            return this.rs.getMetaData().getColumnName(col + 1);
+        } catch (SQLException se) {
+            System.out.println("Error fetching column names" + se);
+            return "?";
+        }
+    }
 }

@@ -15,6 +15,7 @@ public class HarvestManager extends JFrame {
     private JPanel rootPanel;
     private JTable harvestTable;
     private JButton quitButton;
+    private JScrollPane harvestTableScrollPane;
     private HarvestTableDataModel htdm;
 
     public HarvestManager() {
