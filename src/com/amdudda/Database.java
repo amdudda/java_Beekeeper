@@ -25,9 +25,9 @@ public class Database {
     public final static String WEIGHT_COLUMN = "weight";
     public final static String BEEHIVE_FK_COLUMN = "beehive_id";  // foreign key linking hives with their locations
 
-    private static Connection conn = Main.conn;
-    private static Statement statement = Main.statement;
-    private static ResultSet rs = Main.rs;
+    protected static Connection conn;
+    protected static Statement statement;
+    protected static ResultSet rs;
 
     // also some static values to refer to hive IDs since we're only working with 4 hives:
     protected final static int NORTHFIELD = 1;
@@ -216,11 +216,12 @@ public class Database {
         }
     }
 
-    private static void openConnStatement() {
+    protected static void openConnStatement() {
         // establishes a connection to the database.
         try {
             conn = DriverManager.getConnection(DB_CONNECTION_URL + DB_NAME, USER, PASS);
             statement = conn.createStatement();
+            rs = null;
         } catch (SQLException sqle) {
             System.out.println("Unable to open connection or create statement.");
             System.out.println(sqle);

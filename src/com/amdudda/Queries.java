@@ -7,30 +7,30 @@ public class Queries {
 
     // no constructor, this just stores a bunch of SQL strings
 
-    protected String getAllHiveData() {
+    protected static String getAllHiveData() {
         return "SELECT " + Database.HONEY_TABLE_NAME + "." + Database.PK_COLUMN + ", " +
                 Database.DATE_COLLECTED_COLUMN + ", " +
                 Database.WEIGHT_COLUMN + ", " +
                 Database.LOCATION_COLUMN + " " +
                 "FROM " + Database.HONEY_TABLE_NAME + ", " + Database.BEEHIVE_TABLE_NAME + " " +
                 "WHERE " + Database.HONEY_TABLE_NAME + "." + Database.BEEHIVE_FK_COLUMN + " = " +
-                Database.BEEHIVE_TABLE_NAME + "." + Database.PK_COLUMN +
+                Database.BEEHIVE_TABLE_NAME + "." + Database.PK_COLUMN + " " +
                 "ORDER BY " + Database.DATE_COLLECTED_COLUMN + " DESC";
     }
 
-    protected String getTotalWeightOfAllHoney() {
+    protected static String getTotalWeightOfAllHoney() {
         // gets the total amount of honey
         return "SELECT SUM(weight) AS TotalWeight FROM " + Database.HONEY_TABLE_NAME;
     }
 
-    protected String getTotalHoneyFromHive(int hiveNum) {
+    protected static String getTotalHoneyFromHive(int hiveNum) {
         // gets the total amount of honey from a specific hive
         return "SELECT SUM(weight) AS TotalWeight FROM " + Database.HONEY_TABLE_NAME +
                 "WHERE " + Database.BEEHIVE_FK_COLUMN + " = " + hiveNum;
 
     }
 
-    protected String getBestYearWithWeightFromHive(int hiveNum) {
+    protected static String getBestYearWithWeightFromHive(int hiveNum) {
         // gets the best year and total honey for one particular hive
         // the SELECT TOP syntax doesn't seem to work with a group by clause in mySQL,
         // but LIMIT seems to do the same thing.
