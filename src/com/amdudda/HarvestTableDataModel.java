@@ -78,4 +78,17 @@ public class HarvestTableDataModel extends AbstractTableModel {
             return se.toString();
         }
     }
+
+    @Override
+    public boolean isCellEditable(int row, int col){
+        try {
+            // The only non-editable column is the Primary Key column & location name.
+            boolean notPK = !(this.rs.getMetaData().getColumnLabel(col+1).equals(Database.PK_COLUMN));
+            boolean notHiveName = !(this.rs.getMetaData().getColumnLabel(col+1).equals(Database.LOCATION_COLUMN));
+            return (notPK && notHiveName);
+        } catch (SQLException sqle) {
+            System.out.println("Oops, unable to get column metadata.");
+            return false;
+        }
+    }
 }
