@@ -1,7 +1,6 @@
 package com.amdudda;
 
 import javax.swing.table.AbstractTableModel;
-import javax.xml.crypto.Data;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -17,6 +16,7 @@ public class HarvestTableDataModel extends AbstractTableModel {
     HarvestTableDataModel(ResultSet resultSet) {
         this.rs = resultSet;
         establishMetadata();
+        // System.out.println(colcount + " columns x " + rowcount + " rows");
     }
 
     private void establishMetadata() {

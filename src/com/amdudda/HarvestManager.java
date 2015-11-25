@@ -18,7 +18,7 @@ public class HarvestManager extends JFrame {
     private JScrollPane harvestTableScrollPane;
     private JTextField dateCollectedTextField;
     private JLabel dateCollectedLabel;
-    private JTextField textField1;
+    private JTextField weightTextField;
     private JComboBox hiveLocationComboBox;
     private HarvestTableDataModel htdm;
 
@@ -34,7 +34,7 @@ public class HarvestManager extends JFrame {
         // need to set up our data table
         try {
             String sqlToRun = Queries.getAllHiveData();
-            // System.out.println(sqlToRun);
+            //System.out.println(sqlToRun);
             Database.openConnStatement();
             Database.rs = Database.statement.executeQuery(sqlToRun);
             htdm = new HarvestTableDataModel(Database.rs);
