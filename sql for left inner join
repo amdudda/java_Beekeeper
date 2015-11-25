@@ -1,0 +1,4 @@
+SELECT hive_location, date_collected, weight, beehive_id
+FROM Beehive
+LEFT JOIN HoneyData 
+ON Beehive.id = HoneyData.beehive_id;
