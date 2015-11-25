@@ -45,6 +45,20 @@ public class HarvestManager extends JFrame {
 
         harvestTable.setModel(htdm);
         // set up the combo box of locations
+        // setupLocationComboBox();
+
+        quitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // let's make really truly sure our connections are closed
+                Database.closeConnStatement();
+
+                System.exit(0);
+            }
+        });
+    }
+
+    private void setupLocationComboBox() {
         try {
             Database.rs = Database.statement.executeQuery(Queries.getHiveLocations());
             while (Database.rs.next()) {
@@ -54,22 +68,5 @@ public class HarvestManager extends JFrame {
             System.out.println("Unable to get list of locations");
             System.out.println(sqle);
         }
-
-        quitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // let's make really truly sure our connections are closed
-                try {
-                    if (Database.statement != null) Database.statement.close();
-                    if (Database.conn != null) Database.conn.close();
-                    if (Database.rs != null) Database.rs.close();
-                } catch (SQLException sqle) {
-                    System.out.println(sqle);
-                }
-
-                System.exit(0);
-            }
-        });
     }
-
 }

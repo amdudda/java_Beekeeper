@@ -40,8 +40,11 @@ public class Database {
     // A method to set up the database for the rest of the project
     public static void createDatabase() {
         createSchema();
+        // the rest can use a global connection:
+        openConnStatement();
         createTables();
         populateData();
+        closeConnStatement();
     }
 
 
@@ -111,7 +114,6 @@ public class Database {
     // A method to populate the database with data
     private static void populateData() {
         // create some records for the Beehive table
-        openConnStatement();
 
         // generate beehive data
         createBeehiveData();
@@ -198,6 +200,16 @@ public class Database {
             rs = null;
         } catch (SQLException sqle) {
             System.out.println("Unable to open connection or create statement.");
+            System.out.println(sqle);
+        }
+    }
+
+    protected static void closeConnStatement() {
+        try {
+            if (statement != null) statement.close();
+            if (conn != null) conn.close();
+            if (rs != null) rs.close();
+        } catch (SQLException sqle) {
             System.out.println(sqle);
         }
     }

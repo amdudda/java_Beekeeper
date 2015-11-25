@@ -8,7 +8,7 @@ public class Main {
 	// write your code here
 
         // this creates the schema 'Beekeeper', sets up the tables, and adds some test data to the database.
-        //Database.createDatabase();
+        // Database.createDatabase();
 
         // display the main GUI form
         HarvestManager hm = new HarvestManager();
