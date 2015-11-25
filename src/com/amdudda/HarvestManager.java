@@ -20,6 +20,7 @@ public class HarvestManager extends JFrame {
     private JLabel dateCollectedLabel;
     private JTextField weightTextField;
     private JComboBox hiveLocationComboBox;
+    private JButton addHarvestInfoButton;
     private HarvestTableDataModel htdm;
 
     public HarvestManager() {
@@ -48,6 +49,7 @@ public class HarvestManager extends JFrame {
         // set up the combo box of locations -- but this results in "Operation not allowed after ResultSet closed" message
         // when trying to click in the harvestTable scrollform.
         setupLocationComboBox();
+        dateCollectedTextField.setText("YYYY-MM-DD");
 
         quitButton.addActionListener(new ActionListener() {
             @Override
