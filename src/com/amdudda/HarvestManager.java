@@ -32,11 +32,13 @@ public class HarvestManager extends JFrame {
         setVisible(true);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
+        // make sure our connection is up and running.
+        Database.openConnStatement();
+
         // need to set up our data table
         try {
             String sqlToRun = Queries.getAllHiveData();
             //System.out.println(sqlToRun);
-            Database.openConnStatement();
             Statement s = Database.conn.createStatement();
             ResultSet hive = s.executeQuery(sqlToRun);
             htdm = new HarvestTableDataModel(hive);
