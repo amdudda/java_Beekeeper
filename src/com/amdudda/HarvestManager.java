@@ -65,6 +65,27 @@ public class HarvestManager extends JFrame {
                 System.exit(0);
             }
         });
+
+        addHarvestInfoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // this inserts the data into the database.
+                // TODO: input validation
+                String dc = dateCollectedTextField.getText();
+                Double wt = Double.parseDouble(weightTextField.getText());
+                int hn = hiveLocationComboBox.getSelectedIndex() +1;
+                System.out.println(hn);
+                Database.addHoneyData(dc,wt,hn);
+                try {
+                    Database.rs = Database.statement.executeQuery(Queries.getAllHiveData());
+                } catch (SQLException sqle) {
+                    System.out.println("Unable to get updated database info.");
+                    System.out.println(sqle);
+                }
+                //htdm.refresh(Database.rs);
+                htdm.fireTableDataChanged();
+            }
+        });
     }
 
     private void setupLocationComboBox() {
