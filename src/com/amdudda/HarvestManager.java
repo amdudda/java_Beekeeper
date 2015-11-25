@@ -35,23 +35,26 @@ public class HarvestManager extends JFrame {
         // make sure our connection is up and running.
         Database.openConnStatement();
 
+        // set up the combo box of locations -- but this results in "Operation not allowed after ResultSet closed" message
+        // when trying to click in the harvestTable scrollform.
+        setupLocationComboBox();
+        dateCollectedTextField.setText("YYYY-MM-DD");
+
         // need to set up our data table
         try {
             String sqlToRun = Queries.getAllHiveData();
             //System.out.println(sqlToRun);
-            Statement s = Database.conn.createStatement();
-            ResultSet hive = s.executeQuery(sqlToRun);
-            htdm = new HarvestTableDataModel(hive);
+            /*Statement s = Database.conn.createStatement();
+            ResultSet hive = s.executeQuery(sqlToRun);*/
+            Database.rs = Database.statement.executeQuery(sqlToRun);
+            htdm = new HarvestTableDataModel(Database.rs);
         } catch (SQLException sqle) {
             System.out.println("Unable to create data model for harvest display table.");
             System.out.println(sqle);
         }
 
         harvestTable.setModel(htdm);
-        // set up the combo box of locations -- but this results in "Operation not allowed after ResultSet closed" message
-        // when trying to click in the harvestTable scrollform.
-        setupLocationComboBox();
-        dateCollectedTextField.setText("YYYY-MM-DD");
+
 
         quitButton.addActionListener(new ActionListener() {
             @Override
