@@ -53,8 +53,6 @@ public class Database {
             String createDB = "CREATE SCHEMA " + DB_NAME;
             statement.executeUpdate(createDB);
             System.out.println("Created database " + DB_NAME);
-            statement.close();
-            conn.close();
         } catch (SQLException sqle) {
             if (sqle.getSQLState().startsWith("HY")) {
                 // database already exists
@@ -92,18 +90,6 @@ public class Database {
                 BEEHIVE_TABLE_NAME + "(" + PK_COLUMN + "))";
         createTable(sqlToRun, HONEY_TABLE_NAME);
 
-
-        // try closing the connections
-        String flag = "statement or connection";
-        try {
-            statement.close();
-            flag = "statement";
-            conn.close();
-            flag = "connection";
-        } catch (SQLException sqle) {
-            System.out.println("Unable to close " + flag);
-            System.out.println(sqle);
-        }
     }
 
     // create a table based on a string and a table name
@@ -133,17 +119,6 @@ public class Database {
         // generate some honey data
         createHoneyData();
 
-        // try closing the connections
-        String flag = "statement or connection";
-        try {
-            statement.close();
-            flag = "statement";
-            conn.close();
-            flag = "connection";
-        } catch (SQLException sqle) {
-            System.out.println("Unable to close " + flag);
-            System.out.println(sqle);
-        }
     }
 
     private static void createBeehiveData() {
@@ -187,7 +162,6 @@ public class Database {
             rs = statement.executeQuery(sqlToRun);
             rs.next();  // move to the first (hopefully only) record
             next_avail_id = rs.getInt("NextID");
-            rs.close();
         } catch (SQLException sqle) {
             System.out.println(sqle);
         }

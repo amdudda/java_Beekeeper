@@ -1,6 +1,7 @@
 package com.amdudda;
 
 import javax.swing.table.AbstractTableModel;
+import javax.xml.crypto.Data;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -30,9 +31,10 @@ public class HarvestTableDataModel extends AbstractTableModel {
         rowcount = countRows();
     }
 
-    protected void refresh(){
+    protected void refresh(ResultSet newRS){
         // a public version allowing the code to update the object's metadata when
         // new data is added.
+        this.rs = newRS;
         establishMetadata();
     }
 
@@ -97,11 +99,26 @@ public class HarvestTableDataModel extends AbstractTableModel {
         //Get from ResultSet metadata, which contains the database column names
         // This is the code from MovieDataModel that actuall puts column names in the top of the table.
         try {
-            //System.out.println("colname = " + this.rs.getMetaData().getColumnName(col + 1));
-            return this.rs.getMetaData().getColumnName(col + 1);
+            String header = this.rs.getMetaData().getColumnName(col + 1);
+            if (header.equals(Database.PK_COLUMN)) return "RecordID";
+            else if (header.equals(Database.DATE_COLLECTED_COLUMN)) return "Date Collected";
+            else if (header.equals(Database.WEIGHT_COLUMN)) return "Weight (in kg)";
+            else if (header.equals(Database.LOCATION_COLUMN)) return "Location";
+            else return header;
         } catch (SQLException se) {
             System.out.println("Error fetching column names" + se);
             return "?";
+        }
+    }
+
+    // some additional methods for data management:
+    public void insertRecord(String dateColl, double wt, int locID) {
+        // lets user add record: create a new
+        Database.addHoneyData(dateColl, wt, locID);
+        try {
+            Database.rs = Database.statement.executeQuery(Queries.getAllHiveData());
+        } catch (SQLException sqle) {
+            System.out.println("Unable to update Harvest Data Table.");
         }
     }
 }

@@ -39,4 +39,8 @@ public class Queries {
                 "WHERE beehive_id = " + hiveNum +
                 " GROUP BY YearCollected ORDER BY TotalWeight DESC LIMIT 1;";
     }
+
+    protected static String getHiveLocations() {
+        return "SELECT " + Database.LOCATION_COLUMN + " FROM " + Database.BEEHIVE_TABLE_NAME;
+    }
 }

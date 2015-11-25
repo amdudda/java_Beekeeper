@@ -1,12 +1,12 @@
 package com.amdudda;
 
 import javax.swing.*;
-import javax.xml.crypto.Data;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Created by amdudda on 11/25/2015.
@@ -16,12 +16,16 @@ public class HarvestManager extends JFrame {
     private JTable harvestTable;
     private JButton quitButton;
     private JScrollPane harvestTableScrollPane;
+    private JTextField dateCollectedTextField;
+    private JLabel dateCollectedLabel;
+    private JTextField textField1;
+    private JComboBox hiveLocationComboBox;
     private HarvestTableDataModel htdm;
 
     public HarvestManager() {
         setContentPane(rootPanel);
         //pack();
-        Dimension dim = new Dimension(500,500);
+        Dimension dim = new Dimension(500, 500);
         setSize(dim);
         setTitle("Beehive Harvest Database Application");
         setVisible(true);
@@ -40,6 +44,16 @@ public class HarvestManager extends JFrame {
         }
 
         harvestTable.setModel(htdm);
+        // set up the combo box of locations
+        try {
+            Database.rs = Database.statement.executeQuery(Queries.getHiveLocations());
+            while (Database.rs.next()) {
+                hiveLocationComboBox.addItem(Database.rs.getString(1));
+            }
+        } catch (SQLException sqle) {
+            System.out.println("Unable to get list of locations");
+            System.out.println(sqle);
+        }
 
         quitButton.addActionListener(new ActionListener() {
             @Override
@@ -57,4 +71,5 @@ public class HarvestManager extends JFrame {
             }
         });
     }
+
 }
