@@ -45,7 +45,7 @@ public class HarvestManager extends JFrame {
 
         harvestTable.setModel(htdm);
         // set up the combo box of locations
-        // setupLocationComboBox();
+        setupLocationComboBox();
 
         quitButton.addActionListener(new ActionListener() {
             @Override
