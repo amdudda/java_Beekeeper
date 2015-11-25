@@ -36,15 +36,17 @@ public class HarvestManager extends JFrame {
             String sqlToRun = Queries.getAllHiveData();
             //System.out.println(sqlToRun);
             Database.openConnStatement();
-            Database.rs = Database.statement.executeQuery(sqlToRun);
-            htdm = new HarvestTableDataModel(Database.rs);
+            Statement s = Database.conn.createStatement();
+            ResultSet hive = s.executeQuery(sqlToRun);
+            htdm = new HarvestTableDataModel(hive);
         } catch (SQLException sqle) {
             System.out.println("Unable to create data model for harvest display table.");
             System.out.println(sqle);
         }
 
         harvestTable.setModel(htdm);
-        // set up the combo box of locations
+        // set up the combo box of locations -- but this results in "Operation not allowed after ResultSet closed" message
+        // when trying to click in the harvestTable scrollform.
         setupLocationComboBox();
 
         quitButton.addActionListener(new ActionListener() {
