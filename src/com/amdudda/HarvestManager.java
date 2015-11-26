@@ -77,7 +77,7 @@ public class HarvestManager extends JFrame {
                 Double wt = Double.parseDouble(weightTextField.getText());
                 int hn = hiveLocationComboBox.getSelectedIndex() +1;
                 System.out.println(hn);
-                Database.addHoneyData(dc,wt,hn);
+                Database.addHoneyData(dc,wt,hn);  // this doesn't look parameterized here, but look deep enough and you'll find that it is.
                 try {
                     Database.rs = Database.statement.executeQuery(Queries.getAllHiveData());
                 } catch (SQLException sqle) {
@@ -86,6 +86,9 @@ public class HarvestManager extends JFrame {
                 }
                 // refresh the datamodel
                 htdm.refresh(Database.rs);
+                // and reset the data entry boxes:
+                dateCollectedTextField.setText("YYYY-MM-DD");
+                weightTextField.setText("");
             }
         });
 
