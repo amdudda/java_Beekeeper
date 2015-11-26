@@ -21,6 +21,7 @@ public class HarvestManager extends JFrame {
     private JTextField weightTextField;
     private JComboBox hiveLocationComboBox;
     private JButton addHarvestInfoButton;
+    private JButton deleteSelectedRecordButton;
     private HarvestTableDataModel htdm;
 
     public HarvestManager() {
@@ -82,8 +83,34 @@ public class HarvestManager extends JFrame {
                     System.out.println("Unable to get updated database info.");
                     System.out.println(sqle);
                 }
-                //htdm.refresh(Database.rs);
+                // refresh the datamodel and remind it that the information has been updated.
+                htdm.refresh(Database.rs);
                 htdm.fireTableDataChanged();
+            }
+        });
+        deleteSelectedRecordButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // deletes the selected record in the database
+                int pk_to_delete = -1;
+                try {
+                    int row = harvestTable.getSelectedRow();
+                    // System.out.println("selected record = " + row);
+                    // get the column number of the primary key column - not guaranteed to be the zeroth column
+                    int col = -1;
+                    for (int i = 0; i < htdm.getColumnCount(); i++) {
+                        if (Database.rs.getMetaData().getColumnName(i+1).equals(Database.PK_COLUMN)) {
+                            col = i;
+                            break;
+                        }
+                    }
+                    pk_to_delete = Integer.parseInt(htdm.getValueAt(row, col).toString());
+                } catch (SQLException sqle) {
+                    System.out.println("Unable to get primary key of record to delete.");
+                    System.out.println(sqle);
+                }
+
+                System.out.println(pk_to_delete);
             }
         });
     }
