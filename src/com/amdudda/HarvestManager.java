@@ -1,6 +1,7 @@
 package com.amdudda;
 
 import javax.swing.*;
+import javax.xml.crypto.Data;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -83,11 +84,11 @@ public class HarvestManager extends JFrame {
                     System.out.println("Unable to get updated database info.");
                     System.out.println(sqle);
                 }
-                // refresh the datamodel and remind it that the information has been updated.
+                // refresh the datamodel
                 htdm.refresh(Database.rs);
-                htdm.fireTableDataChanged();
             }
         });
+
         deleteSelectedRecordButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -110,7 +111,19 @@ public class HarvestManager extends JFrame {
                     System.out.println(sqle);
                 }
 
-                System.out.println(pk_to_delete);
+                try {
+                    // construct the record deletion query; data is clean because it's extracted from our database
+                    // and record id is not an editable field in the table.
+                    String sqlToRun = "DELETE FROM " + Database.HONEY_TABLE_NAME + " WHERE " +
+                            Database.PK_COLUMN + " = " + pk_to_delete;
+                    Database.statement.executeUpdate(sqlToRun);
+                    // and update the resultset with the new info.
+                    Database.rs = Database.statement.executeQuery(Queries.getAllHiveData());
+                } catch (SQLException sqle) {
+                    System.out.println("Unable to delete record from database.\n" + sqle);
+                }
+
+                htdm.refresh(Database.rs);
             }
         });
     }

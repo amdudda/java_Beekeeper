@@ -36,6 +36,7 @@ public class HarvestTableDataModel extends AbstractTableModel {
         // new data is added.
         this.rs = newRS;
         establishMetadata();
+        this.fireTableDataChanged();
     }
 
     private int countRows() {
