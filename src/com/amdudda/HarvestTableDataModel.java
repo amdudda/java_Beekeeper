@@ -9,7 +9,7 @@ import java.time.Year;
  * Adapted from MovieDataModel used in previous class.
  */
 public class HarvestTableDataModel extends AbstractTableModel {
-    ResultSet rs;
+    private ResultSet rs;
     private int rowcount = 0;
     private int colcount = 0;
     private boolean isDetailView = true;
