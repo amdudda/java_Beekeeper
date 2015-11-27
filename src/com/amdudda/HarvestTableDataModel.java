@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Year;
 
 /**
  * Created by amdudda on 11/25/2015.
@@ -176,11 +177,25 @@ public class HarvestTableDataModel extends AbstractTableModel {
 
     private boolean validDate(String date) {
         // adapted from Stack Overflow: http://stackoverflow.com/questions/14194290/validating-a-date-in-java
+        /*  This code doesn't catch dates that are not valid date, it just checks for proper format.
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         try {
             sdf.parse(date);
             return true;
         } catch (ParseException ex) {
+            return false;
+        }*/
+        // this code works better.
+        try {
+            String[] dateparts = date.split("-");
+            if (dateparts.length != 3) return false;
+            int year = Integer.parseInt(dateparts[0]);
+            int month = Integer.parseInt(dateparts[1]);
+            int day = Integer.parseInt(dateparts[2]);
+            return ( year >= 1995 && year <= Integer.parseInt(Year.now().toString())) &&
+                    (month > 0 && month < 13) &&
+                    (day > 0 && day <=31);
+        } catch (Exception e) {
             return false;
         }
     }

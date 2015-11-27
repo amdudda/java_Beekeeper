@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Year;
 
 /**
  * Created by amdudda on 11/25/2015.
@@ -139,16 +140,25 @@ public class HarvestManager extends JFrame {
             @Override
             public void focusLost(FocusEvent e) {
                 super.focusLost(e);
-                /*TRUTH TABLE:
-                VALID DATE  DEFAULT VALUE   RESULT
-                T           T               T
-                T           F               T
-                F           F               F
-                F           T               T
-                */
                 boolean doAlert = !(validDate(dateCollectedTextField.getText()) ||
                         dateCollectedTextField.getText().equals("YYYY-MM-DD"));
-                JOptionPane.showMessageDialog(rootPanel,doAlert);
+                if (doAlert) {
+                    // if it's not valid for the field, need to tell hte user and set the focus back on hte field.
+                    JOptionPane.showMessageDialog(rootPanel, "Please enter a valid date in YYYY-MM-DD format.");
+                    dateCollectedTextField.grabFocus();
+                }
+            }
+        });
+        weightTextField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                super.focusLost(e);
+                if (!validWeight(weightTextField.getText())) {
+                    // if it's not valid for the field, need to tell hte user and set the focus back on hte field.
+                    JOptionPane.showMessageDialog(rootPanel, "Please enter a weight less than 1000kg and \nwith no more than 2 decimal places.");
+                    weightTextField.grabFocus();
+                }
+
             }
         });
     }
@@ -166,12 +176,17 @@ public class HarvestManager extends JFrame {
     }
 
     private boolean validDate(String date) {
-        // adapted from Stack Overflow: http://stackoverflow.com/questions/14194290/validating-a-date-in-java
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         try {
-            sdf.parse(date);
-            return true;
-        } catch (ParseException ex) {
+            // HarvestTableDM won't share with this, so welcome to Land Of Copypasta!
+            String[] dateparts = date.split("-");
+            if (dateparts.length != 3) return false;
+            int year = Integer.parseInt(dateparts[0]);
+            int month = Integer.parseInt(dateparts[1]);
+            int day = Integer.parseInt(dateparts[2]);
+            return ( year >= 1995 && year <= Integer.parseInt(Year.now().toString())) &&
+                    (month > 0 && month < 13) &&
+                    (day > 0 && day <=31);
+        } catch (Exception e) {
             return false;
         }
     }
@@ -188,7 +203,7 @@ public class HarvestManager extends JFrame {
                 verdict = (Integer.parseInt(wtsplit[0]) < 1000);
             }
         } catch (Exception e) {
-            System.out.println(e);
+            //System.out.println(e);
             verdict = false;
         }
 
