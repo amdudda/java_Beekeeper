@@ -64,7 +64,7 @@ public class Queries {
         // this syntax return data for the most productive hive
         return "SELECT SUM(weight) AS total_harvest," + Database.LOCATION_COLUMN +
                 " FROM " + Database.HONEY_TABLE_NAME + ", " + Database.BEEHIVE_TABLE_NAME +
-                " WHERE" + Database.BEEHIVE_FK_COLUMN + " = " + Database.BEEHIVE_TABLE_NAME + "." + Database.PK_COLUMN +
+                " WHERE " + Database.BEEHIVE_FK_COLUMN + " = " + Database.BEEHIVE_TABLE_NAME + "." + Database.PK_COLUMN +
                 " GROUP BY " + Database.LOCATION_COLUMN +
                 " ORDER BY total_harvest DESC " +
                 " LIMIT 1;";

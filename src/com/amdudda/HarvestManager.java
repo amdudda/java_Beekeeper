@@ -36,6 +36,7 @@ public class HarvestManager extends JFrame {
     private JButton showBestYearForButton;
     private JButton reportTypeSelectionButton;
     private JLabel reportTypeLabel;
+    private JButton mostAndLeastProductiveButton;
     private boolean detailReportIsSelected = true;
     private HarvestTableDataModel htdm;
 
@@ -248,6 +249,34 @@ public class HarvestManager extends JFrame {
                 }
             }
         });
+
+        mostAndLeastProductiveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // gets productivity data and displays it in a popup
+                String mostProdName = "", leastProdName = "", answer;
+                double mostProdKg = 0, leastProdKg = 0;
+                int harvestCol, locationCol;  // TODO: Extract column numbers based on field name?
+
+                try {
+                    Statement productivity = Database.conn.createStatement();
+                    ResultSet prodRS = productivity.executeQuery(Queries.getMostProductiveHive());
+                    // col 1 = harvest, col 2 = location
+                    prodRS.next();
+                    mostProdKg = prodRS.getDouble(1);
+                    mostProdName = prodRS.getString(2);
+                    prodRS = productivity.executeQuery(Queries.getLeastProductiveHive());
+                    leastProdKg = prodRS.getDouble(1);
+                    leastProdName = prodRS.getString(2);
+                    prodRS.close();
+                } catch (SQLException sqle) {
+                    System.out.println("Unable to fetch productivity data.\n" + sqle);
+                }
+                answer = String.format("%s has been the most productive at %.2f.\n %s has been the least productive at %2f.",
+                        mostProdName,mostProdKg,leastProdName,leastProdKg);
+                JOptionPane.showMessageDialog(rootPanel,answer);
+            }
+        });
     }
 
     private void setupLocationComboBox() {
@@ -317,7 +346,7 @@ public class HarvestManager extends JFrame {
         return hiveName;
     }
 
-    private int getPKColNum() {
+    protected int getPKColNum() {
         int col = -1;
         try {
             for (int i = 0; i < htdm.getColumnCount(); i++) {
