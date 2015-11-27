@@ -174,7 +174,7 @@ public class HarvestTableDataModel extends AbstractTableModel {
 
     }
 
-    public boolean validDate(String date) {
+    private boolean validDate(String date) {
         // adapted from Stack Overflow: http://stackoverflow.com/questions/14194290/validating-a-date-in-java
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         try {
@@ -185,7 +185,7 @@ public class HarvestTableDataModel extends AbstractTableModel {
         }
     }
 
-    public boolean validWeight(String weight) {
+    private boolean validWeight(String weight) {
         // how to split string at a dot: http://javadevnotes.com/java-string-split-dot-examples
         boolean verdict;
         try {

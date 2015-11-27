@@ -5,9 +5,13 @@ import javax.xml.crypto.Data;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by amdudda on 11/25/2015.
@@ -129,6 +133,24 @@ public class HarvestManager extends JFrame {
                 htdm.refresh(Database.rs);
             }
         });
+
+
+        dateCollectedTextField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                super.focusLost(e);
+                /*TRUTH TABLE:
+                VALID DATE  DEFAULT VALUE   RESULT
+                T           T               T
+                T           F               T
+                F           F               F
+                F           T               T
+                */
+                boolean doAlert = !(validDate(dateCollectedTextField.getText()) ||
+                        dateCollectedTextField.getText().equals("YYYY-MM-DD"));
+                JOptionPane.showMessageDialog(rootPanel,doAlert);
+            }
+        });
     }
 
     private void setupLocationComboBox() {
@@ -143,5 +165,34 @@ public class HarvestManager extends JFrame {
         }
     }
 
+    private boolean validDate(String date) {
+        // adapted from Stack Overflow: http://stackoverflow.com/questions/14194290/validating-a-date-in-java
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            sdf.parse(date);
+            return true;
+        } catch (ParseException ex) {
+            return false;
+        }
+    }
 
+    private boolean validWeight(String weight) {
+        // how to split string at a dot: http://javadevnotes.com/java-string-split-dot-examples
+        boolean verdict;
+        try {
+            System.out.println(weight);
+            String[] wtsplit = weight.split("\\.");
+            if (wtsplit.length == 2) {
+                verdict = (wtsplit[1].length() < 3 && Integer.parseInt(wtsplit[0]) < 1000);
+            } else {
+                verdict = (Integer.parseInt(wtsplit[0]) < 1000);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            verdict = false;
+        }
+
+        // System.out.println(verdict);
+        return verdict;
+    }
 }
