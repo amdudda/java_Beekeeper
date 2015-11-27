@@ -53,10 +53,30 @@ public class Queries {
     }
 
     protected static String getAnnualTotalsInRankOrder() {
-        // returns a list of yearly totals in descending order of total annual production
+        // this syntax returns a list of yearly totals in descending order of total annual production
         return "SELECT \"n/a\" as Record_id, YEAR(" + Database.DATE_COLLECTED_COLUMN + ") AS year_collected, " +
                 " SUM(weight) AS " + Database.WEIGHT_COLUMN + ", \"All Hives\" as location FROM  " + Database.HONEY_TABLE_NAME +
                 " GROUP BY year_collected" +
                 " ORDER BY " + Database.WEIGHT_COLUMN + " DESC";
+    }
+
+    protected static String getMostProductiveHive() {
+        // this syntax return data for the most productive hive
+        return "SELECT SUM(weight) AS total_harvest," + Database.LOCATION_COLUMN +
+                " FROM " + Database.HONEY_TABLE_NAME + ", " + Database.BEEHIVE_TABLE_NAME +
+                " WHERE" + Database.BEEHIVE_FK_COLUMN + " = " + Database.BEEHIVE_TABLE_NAME + "." + Database.PK_COLUMN +
+                " GROUP BY " + Database.LOCATION_COLUMN +
+                " ORDER BY total_harvest DESC " +
+                " LIMIT 1;";
+    }
+
+    protected static String getLeastProductiveHive() {
+        // this syntax returns data for the least productive hive
+        return "SELECT SUM(weight) AS total_harvest," + Database.LOCATION_COLUMN +
+                " FROM " + Database.HONEY_TABLE_NAME + ", " + Database.BEEHIVE_TABLE_NAME +
+                " WHERE" + Database.BEEHIVE_FK_COLUMN + " = " + Database.BEEHIVE_TABLE_NAME + "." + Database.PK_COLUMN +
+                " GROUP BY " + Database.LOCATION_COLUMN +
+                " ORDER BY total_harvest " +
+                " LIMIT 1;";
     }
 }

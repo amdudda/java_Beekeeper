@@ -128,10 +128,9 @@ public class HarvestTableDataModel extends AbstractTableModel {
     //This is called when user edits an editable cell
     public void setValueAt(Object newValue, int row, int col) {
         String updatedValue = newValue.toString();
-        // for now, assume column 0 is the PK
+        // TODO: for now, assume column 0 is the PK
         int pk = Integer.parseInt(getValueAt(row, 0).toString());
         PreparedStatement psUpdate = null;
-        String errmsg;
 
         try {
             String sqlToRun = "UPDATE " + Database.HONEY_TABLE_NAME + " " +
@@ -200,7 +199,7 @@ public class HarvestTableDataModel extends AbstractTableModel {
         // how to split string at a dot: http://javadevnotes.com/java-string-split-dot-examples
         boolean verdict;
         try {
-            System.out.println(weight);
+            //System.out.println(weight);
             String[] wtsplit = weight.split("\\.");
             if (wtsplit.length == 2) {
                 verdict = (wtsplit[1].length() < 3 && Integer.parseInt(wtsplit[0]) < 1000);
