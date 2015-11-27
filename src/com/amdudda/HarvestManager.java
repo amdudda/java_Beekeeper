@@ -34,12 +34,13 @@ public class HarvestManager extends JFrame {
     private JComboBox hiveSelectionComboBox;
     private JButton showAnnualProductionForButton;
     private JButton showBestYearForButton;
+    private JButton viewSummaryReportButton;
     private HarvestTableDataModel htdm;
 
     public HarvestManager() {
         setContentPane(rootPanel);
         //pack();
-        Dimension dim = new Dimension(600, 500);
+        Dimension dim = new Dimension(600, 800);
         setSize(dim);
         setTitle("Beehive Harvest Database Application");
         setVisible(true);

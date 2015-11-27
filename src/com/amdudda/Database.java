@@ -9,6 +9,9 @@ public class Database {
     // this class creates the Beekeeper database, creates the database tables, and
     // populates the database with some data.
 
+    // Margaret has this, and it makes sense to check for this, but my code works without it, so I'm leaving it here as a
+    // TODO: check for JDBC driver.
+    // private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";        //Configure the driver needed
     // adapted from MovieRatings code presented in class
     private static String DB_CONNECTION_URL = "jdbc:mysql://localhost:3306/";
     private static final String DB_NAME = "Beekeeper";
