@@ -1,11 +1,12 @@
 package com.amdudda;
 
 import javax.swing.table.AbstractTableModel;
-import javax.xml.crypto.Data;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by amdudda on 11/25/2015.
@@ -88,7 +89,7 @@ public class HarvestTableDataModel extends AbstractTableModel {
     @Override
     public boolean isCellEditable(int row, int col) {
         try {
-            // The only non-editable column is the Primary Key column & location name.
+            // The only non-editable columns are the Primary Key column & location name.
             boolean notPK = !(this.rs.getMetaData().getColumnLabel(col + 1).equals(Database.PK_COLUMN));
             boolean notHiveName = !(this.rs.getMetaData().getColumnLabel(col + 1).equals(Database.LOCATION_COLUMN));
             return (notPK && notHiveName);
@@ -131,25 +132,31 @@ public class HarvestTableDataModel extends AbstractTableModel {
     public void setValueAt(Object newValue, int row, int col) {
         String updatedValue = newValue.toString();
         // for now, assume column 0 is the PK
-        int pk = Integer.parseInt(getValueAt(row,0).toString());
+        int pk = Integer.parseInt(getValueAt(row, 0).toString());
         PreparedStatement psUpdate = null;
+        String errmsg;
 
         try {
             String sqlToRun = "UPDATE " + Database.HONEY_TABLE_NAME + " " +
-                    "SET " + Database.rs.getMetaData().getColumnName(col+1) + " = ? " +
+                    "SET " + Database.rs.getMetaData().getColumnName(col + 1) + " = ? " +
                     "WHERE " + Database.PK_COLUMN + " = ?";
             psUpdate = Database.conn.prepareStatement(sqlToRun);
 
             // need to do different things based on which column entered
             if (getColumnName(col).equals("Date Collected")) {
-                // TODO: validate the date format
-                psUpdate.setDate(1,Date.valueOf(updatedValue));
-                psUpdate.setInt(2,pk);
+                // validate the date format - if it's not valid, don't do anything, just return
+                if (validDate(updatedValue)) {
+                    psUpdate.setDate(1, Date.valueOf(updatedValue));
+                    psUpdate.setInt(2, pk);
+                } else return;
+
             } else if (getColumnName(col).equals("Weight (in kg)")) {
-                // validate the weight as a decimal(3,2) valued double.
-                // TODO: if not valid, alert the user.
-                psUpdate.setDouble(1,Double.parseDouble(updatedValue));
-                psUpdate.setInt(2,pk);
+                // validate the weight as a decimal(3,2) valued double -  if it's not valid, don't do anything, just return
+                // more validation.
+                if (validWeight(updatedValue)) {
+                    psUpdate.setDouble(1, Double.parseDouble(updatedValue));
+                    psUpdate.setInt(2, pk);
+                } else return;
             }
 
             // and update the table & query results
@@ -165,7 +172,36 @@ public class HarvestTableDataModel extends AbstractTableModel {
         refresh(Database.rs);
         fireTableDataChanged();
 
+    }
 
+    public boolean validDate(String date) {
+        // adapted from Stack Overflow: http://stackoverflow.com/questions/14194290/validating-a-date-in-java
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            sdf.parse(date);
+            return true;
+        } catch (ParseException ex) {
+            return false;
+        }
+    }
 
+    public boolean validWeight(String weight) {
+        // how to split string at a dot: http://javadevnotes.com/java-string-split-dot-examples
+        boolean verdict;
+        try {
+            System.out.println(weight);
+            String[] wtsplit = weight.split("\\.");
+            if (wtsplit.length == 2) {
+                verdict = (wtsplit[1].length() < 3 && Integer.parseInt(wtsplit[0]) < 1000);
+            } else {
+                verdict = (Integer.parseInt(wtsplit[0]) < 1000);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            verdict = false;
+        }
+
+        // System.out.println(verdict);
+        return verdict;
     }
 }
