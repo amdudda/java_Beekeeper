@@ -38,7 +38,7 @@ public class Queries {
     }
 
     protected static String getBestYearWithWeightFromHive() {
-        // TODO: This one should be parameterized.
+        // DONE: This one should be parameterized.
         // gets the best year and that year's total honey for one particular hive
         // the SELECT TOP syntax doesn't seem to work with a group by clause in mySQL,
         // but LIMIT seems to do the same thing.
