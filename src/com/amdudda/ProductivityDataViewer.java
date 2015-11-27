@@ -27,11 +27,6 @@ public class ProductivityDataViewer extends JFrame {
         try {
             String sqlToRun = Queries.getCurrentVsPreviousYearProduction();
             dataView = Database.statement.executeQuery(sqlToRun);
-            /*while(dataView.next()) {
-                for (int j=1; j<=4; j++){
-                    System.out.println(dataView.getObject(j).toString());
-                }
-            }*/
             pdm = new ProductivityDataModel(dataView);
         } catch (SQLException sqle) {
             System.out.println("Unable to create data model for productivity data table.\n" + sqle);

@@ -65,6 +65,7 @@ public class ProductivityDataModel extends AbstractTableModel {
             this.rs.absolute(rowIndex + 1);
             Object o = this.rs.getObject(columnIndex + 1);
             if (o == null) {
+                // need to make sure the program knows to treat nulls as zero!
                 return "0";
             }
             else {
