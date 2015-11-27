@@ -15,7 +15,6 @@ public class ProductivityDataModel extends AbstractTableModel {
     ProductivityDataModel(ResultSet input_rs) {
         this.rs = input_rs;
         establishMetadata();
-        // System.out.println(colcount + " columns x " + rowcount + " rows");
     }
 
     private void establishMetadata() {
@@ -56,10 +55,26 @@ public class ProductivityDataModel extends AbstractTableModel {
         return colCount;
     }
 
+
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        // we don't care about manipulating the data - we just want to view it.
-        return null;
+        // return the value of a cell in the table
+        // copypasta from HarvestTableDataModel
+        try {
+            //  System.out.println("get value at, row = " +row);
+            this.rs.absolute(rowIndex + 1);
+            Object o = this.rs.getObject(columnIndex + 1);
+            if (o == null) {
+                return "0";
+            }
+            else {
+                return o.toString();
+            }
+        } catch (SQLException se) {
+            System.out.println(se);
+            //se.printStackTrace();
+            return se.toString();
+        }
     }
 
     @Override

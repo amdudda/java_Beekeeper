@@ -69,8 +69,7 @@ public class HarvestTableDataModel extends AbstractTableModel {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         // return the value of a cell in the table
-        // copypasta from MovieDataModel - I sort of understand it but
-        // don't quite grok it - why does this return an Object and not a String?
+        // copypasta from MovieDataModel
         try {
             //  System.out.println("get value at, row = " +row);
             rs.absolute(rowIndex + 1);

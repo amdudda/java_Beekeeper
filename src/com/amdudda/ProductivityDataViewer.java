@@ -14,6 +14,7 @@ public class ProductivityDataViewer extends JFrame {
     private JButton returnToMainScreenButton;
     private JPanel dataPanel;
     private ProductivityDataModel pdm;
+    private ResultSet dataView;
 
     public ProductivityDataViewer() {
         setContentPane(dataPanel);
@@ -25,7 +26,12 @@ public class ProductivityDataViewer extends JFrame {
         // need to set up our data table
         try {
             String sqlToRun = Queries.getCurrentVsPreviousYearProduction();
-            ResultSet dataView = Database.statement.executeQuery(sqlToRun);
+            dataView = Database.statement.executeQuery(sqlToRun);
+            /*while(dataView.next()) {
+                for (int j=1; j<=4; j++){
+                    System.out.println(dataView.getObject(j).toString());
+                }
+            }*/
             pdm = new ProductivityDataModel(dataView);
         } catch (SQLException sqle) {
             System.out.println("Unable to create data model for productivity data table.\n" + sqle);
@@ -37,6 +43,11 @@ public class ProductivityDataViewer extends JFrame {
         returnToMainScreenButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                try {
+                    dataView.close();
+                } catch (SQLException sqle) {
+                    System.out.println("Unable to close dataview ResultSet.\n" + sqle);
+                }
                 dispose();
             }
         });
