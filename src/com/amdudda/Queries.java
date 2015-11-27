@@ -29,26 +29,34 @@ public class Queries {
                 Database.DATE_COLLECTED_COLUMN + ") = ?";
     }
 
-    protected static String getTotalHoneyFromHive(int hiveNum) {
-        // TODO: This one should be parameterized.
+    protected static String getTotalHoneyFromHive() {
+        // DONE: This one should be parameterized.=
         // gets the total amount of honey from a specific hive
         return "SELECT SUM(weight) AS TotalWeight FROM " + Database.HONEY_TABLE_NAME +
-                "WHERE " + Database.BEEHIVE_FK_COLUMN + " = " + hiveNum;
+                " WHERE " + Database.BEEHIVE_FK_COLUMN + " = ? ";
 
     }
 
-    protected static String getBestYearWithWeightFromHive(int hiveNum) {
+    protected static String getBestYearWithWeightFromHive() {
         // TODO: This one should be parameterized.
-        // gets the best year and total honey for one particular hive
+        // gets the best year and that year's total honey for one particular hive
         // the SELECT TOP syntax doesn't seem to work with a group by clause in mySQL,
         // but LIMIT seems to do the same thing.
-        return "SELECT YEAR(" + Database.DATE_COLLECTED_COLUMN + ") AS YearCollected, " +
-                "SUM(" + Database.WEIGHT_COLUMN + ") AS TotalWeight FROM " + Database.HONEY_TABLE_NAME +
-                "WHERE beehive_id = " + hiveNum +
-                " GROUP BY YearCollected ORDER BY TotalWeight DESC LIMIT 1;";
+        return "SELECT YEAR(" + Database.DATE_COLLECTED_COLUMN + ") AS YearCollected," +
+                " SUM(" + Database.WEIGHT_COLUMN + ") AS TotalWeight FROM " + Database.HONEY_TABLE_NAME +
+                " WHERE " + Database.BEEHIVE_FK_COLUMN +
+                " = ? GROUP BY YearCollected ORDER BY TotalWeight DESC LIMIT 1;";
     }
 
     protected static String getHiveLocations() {
         return "SELECT " + Database.LOCATION_COLUMN + " FROM " + Database.BEEHIVE_TABLE_NAME;
+    }
+
+    protected static String getAnnualTotalsInRankOrder() {
+        // returns a list of yearly totals in descending order of total annual production
+        return "SELECT YEAR(" + Database.DATE_COLLECTED_COLUMN + ") AS year_collected, " +
+                " SUM(weight) AS " + Database.WEIGHT_COLUMN + " FROM  " + Database.HONEY_TABLE_NAME +
+                " GROUP BY year_collected" +
+                " ORDER BY total_weight DESC";
     }
 }

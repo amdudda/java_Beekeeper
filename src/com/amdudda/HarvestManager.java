@@ -31,12 +31,15 @@ public class HarvestManager extends JFrame {
     private JButton deleteSelectedRecordButton;
     private JButton totalHoneyCollectedForButton;
     private JTextArea yearTextArea;
+    private JComboBox hiveSelectionComboBox;
+    private JButton showAnnualProductionForButton;
+    private JButton showBestYearForButton;
     private HarvestTableDataModel htdm;
 
     public HarvestManager() {
         setContentPane(rootPanel);
         //pack();
-        Dimension dim = new Dimension(500, 500);
+        Dimension dim = new Dimension(600, 500);
         setSize(dim);
         setTitle("Beehive Harvest Database Application");
         setVisible(true);
@@ -174,10 +177,53 @@ public class HarvestManager extends JFrame {
                     ResultSet tempData = ps.executeQuery();
                     tempData.next();
                     double totalWt = tempData.getDouble(1);
-                    JOptionPane.showMessageDialog(rootPanel,String.format("A total of %.2fkg of honey were harvested in %s", totalWt, yearTextArea.getText()));
+                    JOptionPane.showMessageDialog(rootPanel,String.format("A total of %.2fkg of honey were harvested in %s.", totalWt, yearTextArea.getText()));
                     tempData.close();
                 } catch (SQLException sqle) {
-                    System.out.println(sqle);
+                    System.out.println("Unable to get grand total honey production:\n" + sqle);
+                }
+            }
+        });
+
+        showAnnualProductionForButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedHive = hiveSelectionComboBox.getSelectedIndex()+1;
+                String hiveName = getHiveName(selectedHive);
+
+                // then report the grand total of honey harvested for that hive.
+                try {
+                    PreparedStatement ps = Database.conn.prepareStatement(Queries.getTotalHoneyFromHive());
+                    ps.setInt(1,selectedHive);
+                    ResultSet tempData = ps.executeQuery();
+                    tempData.next();
+                    double totalWt = tempData.getDouble(1);
+                    JOptionPane.showMessageDialog(rootPanel,String.format("A total of %.2fkg of honey have harvested from the %s hive.", totalWt,hiveName));
+                    ps.close();
+                } catch (SQLException sqle) {
+                    System.out.println("Unable to get hive honey total:\n" + sqle);
+                }
+            }
+        });
+        showBestYearForButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedHive = hiveSelectionComboBox.getSelectedIndex()+1;
+                String hiveName = getHiveName(selectedHive);
+
+                // then report the best year's data.
+                try {
+                    PreparedStatement ps = Database.conn.prepareStatement(Queries.getBestYearWithWeightFromHive());
+                    ps.setInt(1,selectedHive);
+                    ResultSet tempData = ps.executeQuery();
+                    tempData.next();
+                    // TODO: fix magic numbers?
+                    int year = tempData.getInt(1);
+                    double totalWt = tempData.getDouble(2);
+                    JOptionPane.showMessageDialog(rootPanel,String.format("The %s hive's best year was %d, when it produced %.2fkg of honey", hiveName,year,totalWt));
+                    ps.close();
+                } catch (SQLException sqle) {
+                    System.out.println("Unable to get hive honey total:\n" + sqle);
                 }
             }
         });
@@ -187,7 +233,9 @@ public class HarvestManager extends JFrame {
         try {
             Database.rs = Database.statement.executeQuery(Queries.getHiveLocations());
             while (Database.rs.next()) {
-                hiveLocationComboBox.addItem(Database.rs.getString(1));
+                String hiveName = Database.rs.getString(1);
+                hiveLocationComboBox.addItem(hiveName);
+                hiveSelectionComboBox.addItem(hiveName);
             }
         } catch (SQLException sqle) {
             System.out.println("Unable to get list of locations");
@@ -229,5 +277,22 @@ public class HarvestManager extends JFrame {
 
         // System.out.println(verdict);
         return verdict;
+    }
+
+    private String getHiveName(int hiveNum) {
+        String hiveName = "[UNKNOWN]";
+        // get the name of the hive from the database
+        try {
+            PreparedStatement ps = Database.conn.prepareStatement("SELECT " + Database.LOCATION_COLUMN +
+                    " FROM " + Database.BEEHIVE_TABLE_NAME + " WHERE " + Database.PK_COLUMN + " = ?");
+            ps.setInt(1,hiveNum);
+            ResultSet tempData = ps.executeQuery();
+            tempData.next();
+            hiveName = tempData.getString(1);
+            ps.close();
+        } catch (SQLException sqle) {
+            System.out.println("Unable to get hive name prior to getting total weight harvested for hive:\n" + sqle);
+        }
+        return hiveName;
     }
 }
