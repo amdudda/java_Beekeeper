@@ -54,9 +54,9 @@ public class Queries {
 
     protected static String getAnnualTotalsInRankOrder() {
         // returns a list of yearly totals in descending order of total annual production
-        return "SELECT YEAR(" + Database.DATE_COLLECTED_COLUMN + ") AS year_collected, " +
-                " SUM(weight) AS " + Database.WEIGHT_COLUMN + " FROM  " + Database.HONEY_TABLE_NAME +
+        return "SELECT \"n/a\" as Record_id, YEAR(" + Database.DATE_COLLECTED_COLUMN + ") AS year_collected, " +
+                " SUM(weight) AS " + Database.WEIGHT_COLUMN + ", \"All Hives\" as location FROM  " + Database.HONEY_TABLE_NAME +
                 " GROUP BY year_collected" +
-                " ORDER BY total_weight DESC";
+                " ORDER BY " + Database.WEIGHT_COLUMN + " DESC";
     }
 }

@@ -1,12 +1,7 @@
 package com.amdudda;
 
 import javax.swing.table.AbstractTableModel;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.sql.*;
 import java.time.Year;
 
 /**
@@ -17,6 +12,7 @@ public class HarvestTableDataModel extends AbstractTableModel {
     ResultSet rs;
     private int rowcount = 0;
     private int colcount = 0;
+    private boolean isDetailView = true;
 
     HarvestTableDataModel(ResultSet resultSet) {
         this.rs = resultSet;
@@ -93,7 +89,7 @@ public class HarvestTableDataModel extends AbstractTableModel {
             // The only non-editable columns are the Primary Key column & location name.
             boolean notPK = !(this.rs.getMetaData().getColumnLabel(col + 1).equals(Database.PK_COLUMN));
             boolean notHiveName = !(this.rs.getMetaData().getColumnLabel(col + 1).equals(Database.LOCATION_COLUMN));
-            return (notPK && notHiveName);
+            return (isDetailView && notPK && notHiveName);
         } catch (SQLException sqle) {
             System.out.println("Oops, unable to get column metadata.");
             return false;
@@ -218,5 +214,9 @@ public class HarvestTableDataModel extends AbstractTableModel {
 
         // System.out.println(verdict);
         return verdict;
+    }
+
+    public void setIsDetailView(boolean tf) {
+        this.isDetailView = tf;
     }
 }

@@ -34,7 +34,9 @@ public class HarvestManager extends JFrame {
     private JComboBox hiveSelectionComboBox;
     private JButton showAnnualProductionForButton;
     private JButton showBestYearForButton;
-    private JButton viewSummaryReportButton;
+    private JButton reportTypeSelectionButton;
+    private JLabel reportTypeLabel;
+    private boolean detailReportIsSelected = true;
     private HarvestTableDataModel htdm;
 
     public HarvestManager() {
@@ -218,6 +220,34 @@ public class HarvestManager extends JFrame {
                 }
             }
         });
+
+        reportTypeSelectionButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // TODO: Display retains cell data if user is editing it - need to move out of the cell before updating the view
+                try {
+                    if (detailReportIsSelected) {
+                        // switch to summary report
+                        detailReportIsSelected = false;
+                        htdm.setIsDetailView(detailReportIsSelected);
+                        reportTypeLabel.setText("Summary Report");
+                        reportTypeSelectionButton.setText("View Detail Report");
+                        Database.rs = Database.statement.executeQuery(Queries.getAnnualTotalsInRankOrder());
+                        htdm.refresh(Database.rs);
+                    } else {
+                        // switch to detail report
+                        detailReportIsSelected = true;
+                        htdm.setIsDetailView(detailReportIsSelected);
+                        reportTypeLabel.setText("Detail Report");
+                        reportTypeSelectionButton.setText("View Summary Report");
+                        Database.rs = Database.statement.executeQuery(Queries.getAllHiveData());
+                        htdm.refresh(Database.rs);
+                    }
+                } catch (SQLException sqle) {
+                    System.out.println("Unable to switch report type:\n" + sqle);
+                }
+            }
+        });
     }
 
     private void setupLocationComboBox() {
@@ -301,4 +331,6 @@ public class HarvestManager extends JFrame {
         }
         return col;
     }
+
+
 }
