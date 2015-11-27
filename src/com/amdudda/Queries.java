@@ -79,4 +79,35 @@ public class Queries {
                 " ORDER BY total_harvest " +
                 " LIMIT 1;";
     }
+
+    protected static String getCurrentVsPreviousYearProduction() {
+        // this syntax is a very very long-winded query that returns current year's production vs previous year's production
+        // for every hive.  Handles nulls gracefully.  Extremely annoying because my mySQL version doesn't support full joins.  :(
+        return "SELECT hive_location, current_year, previous_year,  " +
+                "IF(current_year IS NULL,0,current_year) - IF(previous_year IS NULL,0,previous_year) AS difference  " +
+                "FROM " +
+                "(SELECT CONVERT(harvest_2015,DECIMAL(5,2)) as current_year, CONVERT(harvest_2014,DECIMAL(5,2)) AS previous_year, bid15 as beehive_id FROM  " +
+                "(SELECT sum(weight) AS harvest_2015, Year(date_collected) AS yc, beehive_id AS bid15 FROM HoneyData " +
+                "GROUP BY beehive_id, yc " +
+                "HAVING yc = Year(now())) AS tbl2015 " +
+                "LEFT JOIN " +
+                "(SELECT sum(weight) as harvest_2014, Year(date_collected) AS yc, beehive_id AS bid14 FROM HoneyData " +
+                "GROUP BY beehive_id, yc " +
+                "HAVING yc = Year(now())-1) AS tbl2014 " +
+                "ON tbl2015.bid15 = tbl2014.bid14 " +
+                "UNION DISTINCT " +
+                "SELECT harvest_2015, harvest_2014, bid15 as beehive_id FROM  " +
+                "(SELECT sum(weight) AS harvest_2015, Year(date_collected) AS yc, beehive_id AS bid15 FROM HoneyData " +
+                "GROUP BY beehive_id, yc " +
+                "HAVING yc = 2015) AS tbl2015  " +
+                "LEFT JOIN " +
+                "(SELECT sum(weight) as harvest_2014, Year(date_collected) AS yc, beehive_id AS bid14 FROM HoneyData " +
+                "GROUP BY beehive_id, yc " +
+                "HAVING yc = 2014) AS tbl2014 " +
+                "ON tbl2015.bid15 = tbl2014.bid14) AS tblUnion " +
+                "RIGHT JOIN " +
+                "Beehive " +
+                "ON beehive_id = Beehive.id " +
+                "ORDER BY difference DESC;";
+    }
 }
