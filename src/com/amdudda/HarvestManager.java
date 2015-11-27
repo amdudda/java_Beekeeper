@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -28,6 +29,8 @@ public class HarvestManager extends JFrame {
     private JComboBox hiveLocationComboBox;
     private JButton addHarvestInfoButton;
     private JButton deleteSelectedRecordButton;
+    private JButton totalHoneyCollectedForButton;
+    private JTextArea yearTextArea;
     private HarvestTableDataModel htdm;
 
     public HarvestManager() {
@@ -159,6 +162,23 @@ public class HarvestManager extends JFrame {
                     weightTextField.grabFocus();
                 }
 
+            }
+        });
+        totalHoneyCollectedForButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // generates a popup with total honey collected in year:
+                try {
+                    PreparedStatement ps = Database.conn.prepareStatement(Queries.getTotalWeightOfAllHoneyForYear());
+                    ps.setInt(1,Integer.parseInt(yearTextArea.getText()));
+                    ResultSet tempData = ps.executeQuery();
+                    tempData.next();
+                    double totalWt = tempData.getDouble(1);
+                    JOptionPane.showMessageDialog(rootPanel,String.format("A total of %.2fkg of honey were harvested in %s", totalWt, yearTextArea.getText()));
+                    tempData.close();
+                } catch (SQLException sqle) {
+                    System.out.println(sqle);
+                }
             }
         });
     }

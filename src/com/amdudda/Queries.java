@@ -1,5 +1,7 @@
 package com.amdudda;
 
+import javax.xml.crypto.Data;
+
 /**
  * Created by amdudda on 11/24/15.
  */
@@ -20,9 +22,11 @@ public class Queries {
                 "ORDER BY " + Database.DATE_COLLECTED_COLUMN + " DESC";
     }
 
-    protected static String getTotalWeightOfAllHoney() {
+    protected static String getTotalWeightOfAllHoneyForYear() {
         // gets the total amount of honey
-        return "SELECT SUM(weight) AS TotalWeight FROM " + Database.HONEY_TABLE_NAME;
+        // parameterized b/c of user input.
+        return "SELECT SUM(weight) AS TotalCollected FROM " + Database.HONEY_TABLE_NAME + " WHERE YEAR(" +
+                Database.DATE_COLLECTED_COLUMN + ") = ?";
     }
 
     protected static String getTotalHoneyFromHive(int hiveNum) {
