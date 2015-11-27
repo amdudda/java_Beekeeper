@@ -37,14 +37,15 @@ public class HarvestManager extends JFrame {
     private JButton reportTypeSelectionButton;
     private JLabel reportTypeLabel;
     private JButton mostAndLeastProductiveButton;
+    private JButton showCurrentVsPreviousButton;
     private boolean detailReportIsSelected = true;
     private HarvestTableDataModel htdm;
 
     public HarvestManager() {
         setContentPane(rootPanel);
-        //pack();
-        Dimension dim = new Dimension(600, 800);
-        setSize(dim);
+        pack();
+       /* Dimension dim = new Dimension(600, 800);
+        setSize(dim);*/
         setTitle("Beehive Harvest Database Application");
         setVisible(true);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -275,6 +276,12 @@ public class HarvestManager extends JFrame {
                 answer = String.format("%s has been the most productive at %.2f.\n %s has been the least productive at %2f.",
                         mostProdName,mostProdKg,leastProdName,leastProdKg);
                 JOptionPane.showMessageDialog(rootPanel,answer);
+            }
+        });
+        showCurrentVsPreviousButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ProductivityDataViewer pdv = new ProductivityDataViewer();
             }
         });
     }
