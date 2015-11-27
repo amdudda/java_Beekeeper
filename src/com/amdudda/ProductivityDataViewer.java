@@ -11,7 +11,6 @@ import java.sql.SQLException;
  */
 public class ProductivityDataViewer extends JFrame {
     private JTable productivityDataTable;
-    private JScrollPane productivityDataScrollPane;
     private JButton returnToMainScreenButton;
     private JPanel dataPanel;
     private ProductivityDataModel pdm;
@@ -31,6 +30,8 @@ public class ProductivityDataViewer extends JFrame {
         } catch (SQLException sqle) {
             System.out.println("Unable to create data model for productivity data table.\n" + sqle);
         }
+        // and plonk the data into the table.
+        productivityDataTable.setModel(pdm);
 
         // close the window when done
         returnToMainScreenButton.addActionListener(new ActionListener() {
