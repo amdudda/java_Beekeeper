@@ -86,9 +86,9 @@ public class HarvestManager extends JFrame {
                 // TODO: input validation
                 String dc = dateCollectedTextField.getText();
                 Double wt = Double.parseDouble(weightTextField.getText());
-                int hn = hiveLocationComboBox.getSelectedIndex() +1;
+                int hn = hiveLocationComboBox.getSelectedIndex() + 1;
                 System.out.println(hn);
-                Database.addHoneyData(dc,wt,hn);  // this doesn't look parameterized here, but look deep enough and you'll find that it is.
+                Database.addHoneyData(dc, wt, hn);  // this doesn't look parameterized here, but look deep enough and you'll find that it is.
                 try {
                     Database.rs = Database.statement.executeQuery(Queries.getAllHiveData());
                 } catch (SQLException sqle) {
@@ -108,22 +108,12 @@ public class HarvestManager extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 // deletes the selected record in the database
                 int pk_to_delete = -1;
-                try {
-                    int row = harvestTable.getSelectedRow();
-                    // System.out.println("selected record = " + row);
-                    // get the column number of the primary key column - not guaranteed to be the zeroth column
-                    int col = -1;
-                    for (int i = 0; i < htdm.getColumnCount(); i++) {
-                        if (Database.rs.getMetaData().getColumnName(i+1).equals(Database.PK_COLUMN)) {
-                            col = i;
-                            break;
-                        }
-                    }
-                    pk_to_delete = Integer.parseInt(htdm.getValueAt(row, col).toString());
-                } catch (SQLException sqle) {
-                    System.out.println("Unable to get primary key of record to delete.");
-                    System.out.println(sqle);
-                }
+                int col;
+                int row = harvestTable.getSelectedRow();
+                // System.out.println("selected record = " + row);
+                // get the column number of the primary key column - not guaranteed to be the zeroth column
+                col = getPKColNum();
+                pk_to_delete = Integer.parseInt(htdm.getValueAt(row, col).toString());
 
                 try {
                     // construct the record deletion query; data is clean because it's extracted from our database
@@ -173,11 +163,11 @@ public class HarvestManager extends JFrame {
                 // generates a popup with total honey collected in year:
                 try {
                     PreparedStatement ps = Database.conn.prepareStatement(Queries.getTotalWeightOfAllHoneyForYear());
-                    ps.setInt(1,Integer.parseInt(yearTextArea.getText()));
+                    ps.setInt(1, Integer.parseInt(yearTextArea.getText()));
                     ResultSet tempData = ps.executeQuery();
                     tempData.next();
                     double totalWt = tempData.getDouble(1);
-                    JOptionPane.showMessageDialog(rootPanel,String.format("A total of %.2fkg of honey were harvested in %s.", totalWt, yearTextArea.getText()));
+                    JOptionPane.showMessageDialog(rootPanel, String.format("A total of %.2fkg of honey were harvested in %s.", totalWt, yearTextArea.getText()));
                     tempData.close();
                 } catch (SQLException sqle) {
                     System.out.println("Unable to get grand total honey production:\n" + sqle);
@@ -188,17 +178,17 @@ public class HarvestManager extends JFrame {
         showAnnualProductionForButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int selectedHive = hiveSelectionComboBox.getSelectedIndex()+1;
+                int selectedHive = hiveSelectionComboBox.getSelectedIndex() + 1;
                 String hiveName = getHiveName(selectedHive);
 
                 // then report the grand total of honey harvested for that hive.
                 try {
                     PreparedStatement ps = Database.conn.prepareStatement(Queries.getTotalHoneyFromHive());
-                    ps.setInt(1,selectedHive);
+                    ps.setInt(1, selectedHive);
                     ResultSet tempData = ps.executeQuery();
                     tempData.next();
                     double totalWt = tempData.getDouble(1);
-                    JOptionPane.showMessageDialog(rootPanel,String.format("A total of %.2fkg of honey have harvested from the %s hive.", totalWt,hiveName));
+                    JOptionPane.showMessageDialog(rootPanel, String.format("A total of %.2fkg of honey have harvested from the %s hive.", totalWt, hiveName));
                     ps.close();
                 } catch (SQLException sqle) {
                     System.out.println("Unable to get hive honey total:\n" + sqle);
@@ -208,19 +198,19 @@ public class HarvestManager extends JFrame {
         showBestYearForButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int selectedHive = hiveSelectionComboBox.getSelectedIndex()+1;
+                int selectedHive = hiveSelectionComboBox.getSelectedIndex() + 1;
                 String hiveName = getHiveName(selectedHive);
 
                 // then report the best year's data.
                 try {
                     PreparedStatement ps = Database.conn.prepareStatement(Queries.getBestYearWithWeightFromHive());
-                    ps.setInt(1,selectedHive);
+                    ps.setInt(1, selectedHive);
                     ResultSet tempData = ps.executeQuery();
                     tempData.next();
                     // TODO: fix magic numbers?
                     int year = tempData.getInt(1);
                     double totalWt = tempData.getDouble(2);
-                    JOptionPane.showMessageDialog(rootPanel,String.format("The %s hive's best year was %d, when it produced %.2fkg of honey", hiveName,year,totalWt));
+                    JOptionPane.showMessageDialog(rootPanel, String.format("The %s hive's best year was %d, when it produced %.2fkg of honey", hiveName, year, totalWt));
                     ps.close();
                 } catch (SQLException sqle) {
                     System.out.println("Unable to get hive honey total:\n" + sqle);
@@ -251,9 +241,9 @@ public class HarvestManager extends JFrame {
             int year = Integer.parseInt(dateparts[0]);
             int month = Integer.parseInt(dateparts[1]);
             int day = Integer.parseInt(dateparts[2]);
-            return ( year >= 1995 && year <= Integer.parseInt(Year.now().toString())) &&
+            return (year >= 1995 && year <= Integer.parseInt(Year.now().toString())) &&
                     (month > 0 && month < 13) &&
-                    (day > 0 && day <=31);
+                    (day > 0 && day <= 31);
         } catch (Exception e) {
             return false;
         }
@@ -285,7 +275,7 @@ public class HarvestManager extends JFrame {
         try {
             PreparedStatement ps = Database.conn.prepareStatement("SELECT " + Database.LOCATION_COLUMN +
                     " FROM " + Database.BEEHIVE_TABLE_NAME + " WHERE " + Database.PK_COLUMN + " = ?");
-            ps.setInt(1,hiveNum);
+            ps.setInt(1, hiveNum);
             ResultSet tempData = ps.executeQuery();
             tempData.next();
             hiveName = tempData.getString(1);
@@ -294,5 +284,20 @@ public class HarvestManager extends JFrame {
             System.out.println("Unable to get hive name prior to getting total weight harvested for hive:\n" + sqle);
         }
         return hiveName;
+    }
+
+    private int getPKColNum() {
+        int col = -1;
+        try {
+            for (int i = 0; i < htdm.getColumnCount(); i++) {
+                if (Database.rs.getMetaData().getColumnName(i + 1).equals(Database.PK_COLUMN)) {
+                    col = i;
+                    break;
+                }
+            }
+        } catch (SQLException sqle) {
+            System.out.println("Unable to get primary key column number:\n" + sqle);
+        }
+        return col;
     }
 }
