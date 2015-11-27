@@ -1,6 +1,9 @@
 package com.amdudda;
 
 import javax.swing.table.AbstractTableModel;
+import javax.xml.crypto.Data;
+import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -31,7 +34,7 @@ public class HarvestTableDataModel extends AbstractTableModel {
         rowcount = countRows();
     }
 
-    protected void refresh(ResultSet newRS){
+    protected void refresh(ResultSet newRS) {
         // a public version allowing the code to update the object's metadata when
         // new data is added.
         this.rs = newRS;
@@ -70,12 +73,12 @@ public class HarvestTableDataModel extends AbstractTableModel {
         // return the value of a cell in the table
         // copypasta from MovieDataModel - I sort of understand it but
         // don't quite grok it - why does this return an Object and not a String?
-        try{
+        try {
             //  System.out.println("get value at, row = " +row);
-            rs.absolute(rowIndex+1);
-            Object o = rs.getObject(columnIndex+1);
+            rs.absolute(rowIndex + 1);
+            Object o = rs.getObject(columnIndex + 1);
             return o.toString();
-        }catch (SQLException se) {
+        } catch (SQLException se) {
             System.out.println(se);
             //se.printStackTrace();
             return se.toString();
@@ -83,11 +86,11 @@ public class HarvestTableDataModel extends AbstractTableModel {
     }
 
     @Override
-    public boolean isCellEditable(int row, int col){
+    public boolean isCellEditable(int row, int col) {
         try {
             // The only non-editable column is the Primary Key column & location name.
-            boolean notPK = !(this.rs.getMetaData().getColumnLabel(col+1).equals(Database.PK_COLUMN));
-            boolean notHiveName = !(this.rs.getMetaData().getColumnLabel(col+1).equals(Database.LOCATION_COLUMN));
+            boolean notPK = !(this.rs.getMetaData().getColumnLabel(col + 1).equals(Database.PK_COLUMN));
+            boolean notHiveName = !(this.rs.getMetaData().getColumnLabel(col + 1).equals(Database.LOCATION_COLUMN));
             return (notPK && notHiveName);
         } catch (SQLException sqle) {
             System.out.println("Oops, unable to get column metadata.");
@@ -96,9 +99,9 @@ public class HarvestTableDataModel extends AbstractTableModel {
     }
 
     @Override
-    public String getColumnName(int col){
+    public String getColumnName(int col) {
         //Get from ResultSet metadata, which contains the database column names
-        // This is the code from MovieDataModel that actuall puts column names in the top of the table.
+        // This is the code from MovieDataModel that actually puts column names in the top of the table.
         try {
             String header = this.rs.getMetaData().getColumnName(col + 1);
             if (header.equals(Database.PK_COLUMN)) return "RecordID";
@@ -121,5 +124,48 @@ public class HarvestTableDataModel extends AbstractTableModel {
         } catch (SQLException sqle) {
             System.out.println("Unable to update Harvest Data Table.");
         }
+    }
+
+    @Override
+    //This is called when user edits an editable cell
+    public void setValueAt(Object newValue, int row, int col) {
+        String updatedValue = newValue.toString();
+        // for now, assume column 0 is the PK
+        int pk = Integer.parseInt(getValueAt(row,0).toString());
+        PreparedStatement psUpdate = null;
+
+        try {
+            String sqlToRun = "UPDATE " + Database.HONEY_TABLE_NAME + " " +
+                    "SET " + Database.rs.getMetaData().getColumnName(col+1) + " = ? " +
+                    "WHERE " + Database.PK_COLUMN + " = ?";
+            psUpdate = Database.conn.prepareStatement(sqlToRun);
+
+            // need to do different things based on which column entered
+            if (getColumnName(col).equals("Date Collected")) {
+                // TODO: validate the date format
+                psUpdate.setDate(1,Date.valueOf(updatedValue));
+                psUpdate.setInt(2,pk);
+            } else if (getColumnName(col).equals("Weight (in kg)")) {
+                // validate the weight as a decimal(3,2) valued double.
+                // TODO: if not valid, alert the user.
+                psUpdate.setDouble(1,Double.parseDouble(updatedValue));
+                psUpdate.setInt(2,pk);
+            }
+
+            // and update the table & query results
+            psUpdate.executeUpdate();
+            psUpdate.close();
+            Database.rs = Database.statement.executeQuery(Queries.getAllHiveData());
+
+        } catch (SQLException sqle) {
+            System.out.println("Unable to update record:\n" + sqle);
+        }
+
+        // refresh the table
+        refresh(Database.rs);
+        fireTableDataChanged();
+
+
+
     }
 }
