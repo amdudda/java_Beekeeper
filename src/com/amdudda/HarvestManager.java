@@ -88,7 +88,11 @@ public class HarvestManager extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // this inserts the data into the database.
-                // TODO: input validation
+                if (!(validDate(dateCollectedTextField.getText()) && validWeight(weightTextField.getText())) || dateCollectedTextField.equals("YYYY-MM-DD")) {
+                    // don't try running the query if the input data is not valid
+                    JOptionPane.showMessageDialog(rootPanel,"Please make sure you have entered valid values for date and weight.");
+                    return;
+                }
                 String dc = dateCollectedTextField.getText();
                 Double wt = Double.parseDouble(weightTextField.getText());
                 int hn = hiveLocationComboBox.getSelectedIndex() + 1;
