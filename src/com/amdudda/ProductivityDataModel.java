@@ -81,7 +81,7 @@ public class ProductivityDataModel extends AbstractTableModel {
 
     @Override
     public String getColumnName(int col) {
-        // not going to do anything fancy here - just going to output field names
+        // generates titles for columns
         String colname = "?";
         int thisYear = Integer.parseInt(Year.now().toString());
         int lastYear = thisYear - 1;

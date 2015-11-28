@@ -82,7 +82,8 @@ public class Queries {
 
     protected static String getCurrentVsPreviousYearProduction() {
         // this syntax is a very very long-winded query that returns current year's production vs previous year's production
-        // for every hive.  Handles nulls gracefully.  Extremely annoying because my mySQL version doesn't support full joins.  :(
+        // for every hive.  Handles nulls gracefully in math, but does return some null values in results.  Extremely annoying
+        // because my mySQL version doesn't support full joins.  :(
         return "SELECT hive_location, current_year, previous_year, " +
                 "IF(current_year IS NULL,0,current_year) - IF(previous_year IS NULL,0,previous_year) AS difference  " +
                 "FROM " +

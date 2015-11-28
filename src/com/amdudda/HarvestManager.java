@@ -232,7 +232,15 @@ public class HarvestManager extends JFrame {
         reportTypeSelectionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO: Display retains cell data if user is editing it - need to move out of the cell before updating the view
+                // Without this popup, the display retains cell data in target cell if user is editing it when they click on the button
+                // - need to move out of the cell before updating the view
+                if (harvestTable.isEditing()) {
+                    // this is kludgy, but prevents the problem.
+                    JOptionPane.showMessageDialog(rootPanel,"Please save your new data before displaying the detail report.");
+                    return;
+                }
+
+                // if it gets past the check, switch the view.
                 try {
                     if (detailReportIsSelected) {
                         // switch to summary report
@@ -267,18 +275,18 @@ public class HarvestManager extends JFrame {
                 // gets productivity data and displays it in a popup
                 String mostProdName = "", leastProdName = "", answer;
                 double mostProdKg = 0, leastProdKg = 0;
-                int harvestCol, locationCol;  // TODO: Extract column numbers based on field name?
+                int harvestCol = 1, locationCol = 2;  // TODO: Extract column numbers based on field name?
 
                 try {
                     Statement productivity = Database.conn.createStatement();
                     ResultSet prodRS = productivity.executeQuery(Queries.getMostProductiveHive());
                     // col 1 = harvest, col 2 = location
                     prodRS.next();
-                    mostProdKg = prodRS.getDouble(1);
-                    mostProdName = prodRS.getString(2);
+                    mostProdKg = prodRS.getDouble(harvestCol);
+                    mostProdName = prodRS.getString(locationCol);
                     prodRS = productivity.executeQuery(Queries.getLeastProductiveHive());
-                    leastProdKg = prodRS.getDouble(1);
-                    leastProdName = prodRS.getString(2);
+                    leastProdKg = prodRS.getDouble(harvestCol);
+                    leastProdName = prodRS.getString(locationCol);
                     prodRS.close();
                 } catch (SQLException sqle) {
                     System.out.println("Unable to fetch productivity data.\n" + sqle);
