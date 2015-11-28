@@ -211,6 +211,8 @@ public class HarvestManager extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 int selectedHive = hiveSelectionComboBox.getSelectedIndex() + 1;
                 String hiveName = getHiveName(selectedHive);
+                final int YEAR_COL = 1;  // year column pointer
+                final int WT_COL = 2;  // weight column pointer
 
                 // then report the best year's data.
                 try {
@@ -218,9 +220,8 @@ public class HarvestManager extends JFrame {
                     ps.setInt(1, selectedHive);
                     ResultSet tempData = ps.executeQuery();
                     tempData.next();
-                    // TODO: fix magic numbers?
-                    int year = tempData.getInt(1);
-                    double totalWt = tempData.getDouble(2);
+                    int year = tempData.getInt(YEAR_COL);
+                    double totalWt = tempData.getDouble(WT_COL);
                     JOptionPane.showMessageDialog(rootPanel, String.format("The %s hive's best year was %d, when it produced %.2fkg of honey", hiveName, year, totalWt));
                     ps.close();
                 } catch (SQLException sqle) {
@@ -275,18 +276,17 @@ public class HarvestManager extends JFrame {
                 // gets productivity data and displays it in a popup
                 String mostProdName = "", leastProdName = "", answer;
                 double mostProdKg = 0, leastProdKg = 0;
-                int harvestCol = 1, locationCol = 2;  // TODO: Extract column numbers based on field name?
+                final int HARVEST_COL = 1, LOCATION_COL = 2;  // variables for extracting column data
 
                 try {
                     Statement productivity = Database.conn.createStatement();
                     ResultSet prodRS = productivity.executeQuery(Queries.getMostProductiveHive());
-                    // col 1 = harvest, col 2 = location
                     prodRS.next();
-                    mostProdKg = prodRS.getDouble(harvestCol);
-                    mostProdName = prodRS.getString(locationCol);
+                    mostProdKg = prodRS.getDouble(HARVEST_COL);
+                    mostProdName = prodRS.getString(LOCATION_COL);
                     prodRS = productivity.executeQuery(Queries.getLeastProductiveHive());
-                    leastProdKg = prodRS.getDouble(harvestCol);
-                    leastProdName = prodRS.getString(locationCol);
+                    leastProdKg = prodRS.getDouble(HARVEST_COL);
+                    leastProdName = prodRS.getString(LOCATION_COL);
                     prodRS.close();
                 } catch (SQLException sqle) {
                     System.out.println("Unable to fetch productivity data.\n" + sqle);
