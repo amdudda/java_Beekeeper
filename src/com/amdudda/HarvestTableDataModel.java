@@ -127,8 +127,8 @@ public class HarvestTableDataModel extends AbstractTableModel {
     //This is called when user edits an editable cell
     public void setValueAt(Object newValue, int row, int col) {
         String updatedValue = newValue.toString();
-        // TODO: for now, assume column 0 is the PK
-        int pk = Integer.parseInt(getValueAt(row, 0).toString());
+        int pkCol = getPKColNum();
+        int pk = Integer.parseInt(getValueAt(row, pkCol).toString());
         PreparedStatement psUpdate = null;
 
         try {
@@ -216,5 +216,20 @@ public class HarvestTableDataModel extends AbstractTableModel {
 
     public void setIsDetailView(boolean tf) {
         this.isDetailView = tf;
+    }
+
+    private int getPKColNum() {
+        int col = -1;
+        try {
+            for (int i = 0; i < this.colcount; i++) {
+                if (Database.rs.getMetaData().getColumnName(i + 1).equals(Database.PK_COLUMN)) {
+                    col = i;
+                    break;
+                }
+            }
+        } catch (SQLException sqle) {
+            System.out.println("Unable to get primary key column number:\n" + sqle);
+        }
+        return col;
     }
 }

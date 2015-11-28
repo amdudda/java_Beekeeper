@@ -380,7 +380,7 @@ public class HarvestManager extends JFrame {
         return hiveName;
     }
 
-    protected int getPKColNum() {
+    private int getPKColNum() {
         int col = -1;
         try {
             for (int i = 0; i < htdm.getColumnCount(); i++) {

@@ -9,7 +9,6 @@ public class Queries {
 
     // no constructor, this just stores a bunch of SQL strings
     // these queries are not parameterized because they don't require user input to generate the sql statement.
-    // TODO: assignment specifies to use parameterized queries.  need to think how and where to implement.
 
     protected static String getAllHiveData() {
         return "SELECT " + Database.HONEY_TABLE_NAME + "." + Database.PK_COLUMN + ", " +
