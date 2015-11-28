@@ -43,9 +43,9 @@ public class HarvestManager extends JFrame {
 
     public HarvestManager() {
         setContentPane(rootPanel);
-        pack();
-       /* Dimension dim = new Dimension(600, 800);
-        setSize(dim);*/
+//        pack();
+         Dimension dim = new Dimension(800, 600);
+        setSize(dim);
         setTitle("Beehive Harvest Database Application");
         setVisible(true);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -154,7 +154,7 @@ public class HarvestManager extends JFrame {
             @Override
             public void focusLost(FocusEvent e) {
                 super.focusLost(e);
-                if (!validWeight(weightTextField.getText())) {
+                if (!validWeight(weightTextField.getText()) && !weightTextField.getText().equals("")) {
                     // if it's not valid for the field, need to tell hte user and set the focus back on hte field.
                     JOptionPane.showMessageDialog(rootPanel, "Please enter a weight less than 1000kg and \nwith no more than 2 decimal places.");
                     weightTextField.grabFocus();
@@ -165,6 +165,8 @@ public class HarvestManager extends JFrame {
         totalHoneyCollectedForButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // if hte year entry text box is blank, do nothing.
+                if (yearTextArea.equals("")) return;
                 // generates a popup with total honey collected in year:
                 try {
                     PreparedStatement ps = Database.conn.prepareStatement(Queries.getTotalWeightOfAllHoneyForYear());
@@ -236,6 +238,8 @@ public class HarvestManager extends JFrame {
                         reportTypeSelectionButton.setText("View Detail Report");
                         Database.rs = Database.statement.executeQuery(Queries.getAnnualTotalsInRankOrder());
                         htdm.refresh(Database.rs);
+                        // and turn off record deletion
+                        deleteSelectedRecordButton.setEnabled(false);
                     } else {
                         // switch to detail report
                         detailReportIsSelected = true;
@@ -244,6 +248,8 @@ public class HarvestManager extends JFrame {
                         reportTypeSelectionButton.setText("View Summary Report");
                         Database.rs = Database.statement.executeQuery(Queries.getAllHiveData());
                         htdm.refresh(Database.rs);
+                        // and turn record deletion back on
+                        deleteSelectedRecordButton.setEnabled(true);
                     }
                 } catch (SQLException sqle) {
                     System.out.println("Unable to switch report type:\n" + sqle);
@@ -278,10 +284,31 @@ public class HarvestManager extends JFrame {
                 JOptionPane.showMessageDialog(rootPanel,answer);
             }
         });
+
         showCurrentVsPreviousButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ProductivityDataViewer pdv = new ProductivityDataViewer();
+            }
+        });
+
+        yearTextArea.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                super.focusLost(e);
+                String toTest = yearTextArea.getText();
+                boolean isValid = true;
+                try {
+                    isValid = (toTest.equals("")) || (Integer.parseInt(toTest) >= 1995 & Integer.parseInt(toTest) <= Integer.parseInt(Year.now().toString()));
+                } catch (NumberFormatException nfe) {
+                    System.out.println(nfe);
+                    isValid = false;
+                }
+                if (!isValid) {
+                    // if not a valid year, let the user know, and return focus to year entry box.
+                    JOptionPane.showMessageDialog(rootPanel,"Please enter a 4-digit year that is between 1995 and " + Year.now());
+                    yearTextArea.grabFocus();
+                }
             }
         });
     }
