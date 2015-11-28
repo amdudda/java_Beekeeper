@@ -3,6 +3,7 @@ package com.amdudda;
 import javax.swing.table.AbstractTableModel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Year;
 
 /**
  * Created by amdudda on 11/27/15.
@@ -82,8 +83,15 @@ public class ProductivityDataModel extends AbstractTableModel {
     public String getColumnName(int col) {
         // not going to do anything fancy here - just going to output field names
         String colname = "?";
+        int thisYear = Integer.parseInt(Year.now().toString());
+        int lastYear = thisYear - 1;
         try {
             colname = this.rs.getMetaData().getColumnName(col+1);
+            if (colname.equals("current_year")) {
+                colname = "" + thisYear;
+            } else if (colname.equals("previous_year")) {
+                colname = "" + lastYear;
+            }
         } catch (SQLException sqle) {
             System.out.println("Unable to fetch column names.\n" + sqle);
         }

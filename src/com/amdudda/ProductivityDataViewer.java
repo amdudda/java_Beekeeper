@@ -28,7 +28,7 @@ public class ProductivityDataViewer extends JFrame {
         // need to set up our data table
         try {
             String sqlToRun = Queries.getCurrentVsPreviousYearProduction();
-            System.out.println(sqlToRun);
+            // System.out.println(sqlToRun);
             dataStatement = Database.conn.createStatement();
             dataView = dataStatement.executeQuery(sqlToRun);
             pdm = new ProductivityDataModel(dataView);
