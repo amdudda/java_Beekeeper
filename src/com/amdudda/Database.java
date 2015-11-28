@@ -9,9 +9,8 @@ public class Database {
     // this class creates the Beekeeper database, creates the database tables, and
     // populates the database with some data.
 
-    // Margaret has this, and it makes sense to check for this, but my code works without it, so I'm leaving it here as a
-    // TODO: check for JDBC driver.
-    // private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";        //Configure the driver needed
+    // Margaret reminded me to check for the JDBC driver
+    private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";        //Configure the driver needed
     // adapted from MovieRatings code presented in class
     private static String DB_CONNECTION_URL = "jdbc:mysql://localhost:3306/";
     private static final String DB_NAME = "Beekeeper";
@@ -42,6 +41,7 @@ public class Database {
 
     // A method to set up the database for the rest of the project
     public static void createDatabase() {
+
         createSchema();
         // the rest can use a global connection:
         openConnStatement();
@@ -214,6 +214,17 @@ public class Database {
             if (rs != null) rs.close();
         } catch (SQLException sqle) {
             System.out.println(sqle);
+        }
+    }
+
+    protected static void checkJdbcDriver() {
+        //check that the JDBC driver actually works
+        try {
+            Class.forName(JDBC_DRIVER);
+        } catch (ClassNotFoundException cnfe) {
+            System.out.println("Unable to instantiate driver class - check the string value you set up for it.");
+            cnfe.printStackTrace();
+            System.exit(-1); // No driver = can't do squat till it's fixed.
         }
     }
 }
