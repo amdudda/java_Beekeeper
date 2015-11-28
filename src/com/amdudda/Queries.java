@@ -81,9 +81,20 @@ public class Queries {
     }
 
     protected static String getCurrentVsPreviousYearProduction() {
-        // this syntax is a very very long-winded query that returns current year's production vs previous year's production
-        // for every hive.  Handles nulls gracefully in math, but does return some null values in results.  Extremely annoying
-        // because my mySQL version doesn't support full joins.  :(
+        /*
+         this syntax is a very very long-winded query that returns current year's production vs previous year's production
+         for every hive.  Handles nulls gracefully in math, but does return some null values in results.  Extremely annoying
+         because my mySQL version doesn't support full joins.  :(  I determined this by looking at the help site at
+         http://dev.mysql.com/doc/refman/5.7/en/join.html  The following comment on the page confirmed this:
+
+            Posted by joerg schaber on June 11, 2003
+        "I also think that the missing feature of FULL OUTER JOIN is a real drawback to MySQL. However, from MySQL 4 on
+        you can use a workaround using the UNION construct. E.g. at http://www.oreillynet.com/pub/a/network/2002/04/23/fulljoin.html"
+
+        Following that URL and reading other comments led me to realize that a UNION DISTINCT on two identical queries -
+        one a left join and one a right join - will get me useable results.  Then I had to encapsulate the entire query,
+        then right join it to the Beehive table so that every hive would be listed in the results.
+        */
         return "SELECT hive_location, current_year, previous_year, " +
                 "IF(current_year IS NULL,0,current_year) - IF(previous_year IS NULL,0,previous_year) AS difference  " +
                 "FROM " +
